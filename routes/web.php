@@ -47,7 +47,6 @@ Route::get('posts/{code_post}', [HomeController::class, 'postShow'])->name('post
 
 Route::middleware('auth')->group(function () {
     Route::post('posts/{code_post}/comments', [HomeController::class, 'postComment'])->name('comments.store');
-    // ADDING UNIQUE NUMBER FOR EACH POST AVOID DOUBLE COMMENT ON SAME POST slug
 
     Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');

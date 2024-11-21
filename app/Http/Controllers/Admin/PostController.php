@@ -17,7 +17,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $collections = Post::with('user', 'categories')->orderBy('created_at', 'asc')->paginate(10);
+        $collections = Post::with('postCategories', 'categories')->orderBy('created_at', 'asc')->paginate(10);
 
         return view('admin.posts.index', compact('collections'));
     }
@@ -95,7 +95,10 @@ class PostController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $post = Post::with('categories')->findOrFail($id);
+        $categories = Category::all();
+
+        return view('admin.posts.show', compact('post', 'categories'));
     }
 
     /**
@@ -103,7 +106,10 @@ class PostController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $post = Post::with('categories')->findOrFail($id);
+        $categories = Category::all();
+
+        return view('admin.posts.edit', compact('post', 'categories'));
     }
 
     /**
@@ -111,7 +117,48 @@ class PostController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            $request->validate([
+                'title' => 'required',
+                'contents' => 'required',
+                'category_id' => 'required|array',
+                'image' => 'image|mimes:jpeg,jpg,png|max:2048',
+            ], [
+                'title.required' => 'Judul harus diisi',
+                'contents.required' => 'Konten harus diisi',
+                'category_id.required' => 'Kategori harus dipilih',
+                'category_id.array' => 'Kategori harus dipilih',
+            ]);
+
+            $request['slug'] = Str::slug($request->title);
+            $request['excerpt'] = Str::limit(strip_tags($request->contents), 200);
+
+            $post = Post::findOrFail($id);
+
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $image->storeAs('public/posts', $image->hashName());
+            }
+
+            $post->update([
+                'title' => $request->title,
+                'slug' => $request->slug,
+                'contents' => $request->contents,
+                'excerpt' => $request->excerpt,
+                'image' => $request->hasFile('image') ? $image->hashName() : $post->image,
+                'user_id' => auth()->user()->id,
+            ]);
+
+            $post->categories()->detach();
+            foreach ($request->category_id as $category) {
+                $post->categories()->attach($category, ['user_id' => auth()->user()->id]);
+            }
+
+            return redirect()->route('admin.posts.index')->with('success', 'Post berhasil diubah');
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     /**
@@ -119,6 +166,14 @@ class PostController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $post = Post::findOrFail($id);
+            $post->categories()->detach();
+            $post->delete();
+
+            return redirect()->route('admin.posts.index')->with('success', 'Post berhasil dihapus');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 }
