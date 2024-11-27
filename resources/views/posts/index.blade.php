@@ -3,7 +3,18 @@
 @section('title', 'Posts')
 
 @section('content')
-    <div class="mb-4 d-flex gap-5">
+    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a class="text-black"href="{{ route('posts.index') }}">Post</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Home</li>
+        </ol>
+    </nav>
+
+    <form method="GET" action="{{ route('search') }}" class="form-group d-flex gap-3 py-2 mb-3">
+        <input class="form-control form-control-lg" id="search-form" name="q" placeholder="Cari Sesuatu...">
+        <button class="btn btn-lg btn-primary">Search</button>
+    </form>
+    <div class="mb-4 d-flex justify-content-between gap-5">
         <div class="d-flex flex-column">
             <div class="latest-post row mb-5">
                 <h2 class="mb-3 fw-bold">Latest Posts</h2>

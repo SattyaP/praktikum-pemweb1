@@ -15,7 +15,31 @@
     <img src="{{ asset('/storage/posts/' . $post->image) }}" class="card-img-top img-fluid mb-3" alt="{{ $post->title }}">
     <h1 class="fw-bold">{{ $post->title }}</h1>
 
+    <div class="d-flex gap-3 align-items-center text-center">
+        <div class="form-group">
+            <a href="{{ route('like', $post->code_post) }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24">
+                    <path fill="black"
+                        d="M5 9v12H1V9zm4 12a2 2 0 0 1-2-2V9c0-.55.22-1.05.59-1.41L14.17 1l1.06 1.06c.27.27.44.64.44 1.05l-.03.32L14.69 8H21a2 2 0 0 1 2 2v2c0 .26-.05.5-.14.73l-3.02 7.05C19.54 20.5 18.83 21 18 21zm0-2h9.03L21 12v-2h-8.79l1.13-5.32L9 9.03z" />
+                </svg>
+            </a>
+
+            <p>{{ $totalLikes }}</p>
+        </div>
+        <div class="form-group">
+            <a href="{{ route('dislike', $post->code_post) }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24">
+                    <path fill="black"
+                        d="M19 15V3h4v12zM15 3a2 2 0 0 1 2 2v10c0 .55-.22 1.05-.59 1.41L9.83 23l-1.06-1.06c-.27-.27-.44-.64-.44-1.06l.03-.31l.95-4.57H3a2 2 0 0 1-2-2v-2c0-.26.05-.5.14-.73l3.02-7.05C4.46 3.5 5.17 3 6 3zm0 2H5.97L3 12v2h8.78l-1.13 5.32L15 14.97z" />
+                </svg>
+            </a>
+
+            <p>{{ $totalDislikes }}</p>
+        </div>
+    </div>
+
     <p>Published at {{ $post->created_at->diffForHumans() }}</p>
+
 
     <article>
         <p>{{ $post->contents }}</p>
@@ -24,15 +48,36 @@
     <div class="card p-3 m-3">
         <h3 class="card-title fw-bold mb-3">Kolom Komentar</h3>
         @forelse ($post->comments as $comment)
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="fw-bold">{{ $comment->user->name }}</h5>
-                    <p class="card-text">{{ $comment->contents }}</p>
-                    <p class="card-text"><small class="text-muted">Published at
-                            {{ $comment->created_at->diffForHumans() }}</small>
-                    </p>
+            @if ($comment->scopePending($comment) && $comment->status !== 'rejected')
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="fw-bold">{{ $comment->user->name }}</h5>
+                        <p class="card-text">{{ $comment->contents }}</p>
+                        <p class="card-text"><small class="text-muted">Published
+                                at{{ $comment->created_at->diffForHumans() }}</small></p>
+                        @if (auth()->user()->id === $post->postCategories[0]->user_id)
+                            <p class="card-text"><small class="text-muted">{{ $comment->status }}</small></p>
+                        @endif
+                    </div>
+                    @if (auth()->user()->id === $post->postCategories[0]->user_id)
+                        <div class="card-footer d-flex gap-3">
+                            @if (!($comment->status === 'approved'))
+                                <form action="{{ route('comments.approve', $comment->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-primary">Approve</button>
+                                </form>
+                            @endif
+
+                            @if (!($comment->status === 'approved'))
+                                <form action="{{ route('comments.reject', $comment->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger">Reject</button>
+                                </form>
+                            @endif
+                        </div>
+                    @endif
                 </div>
-            </div>
+            @endif
         @empty
             <p>No comments found.</p>
         @endforelse

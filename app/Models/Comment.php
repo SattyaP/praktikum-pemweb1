@@ -9,7 +9,11 @@ class Comment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['contents', 'user_id', 'post_id'];
+    protected $fillable = ['contents', 'user_id', 'post_id', 'status'];
+
+    const STATUS_PENDING = 'pending';
+    const STATUS_APPROVED = 'approved';
+    const STATUS_REJECTED = 'rejected';
 
     public function user()
     {
@@ -19,5 +23,10 @@ class Comment extends Model
     public function post()
     {
         return $this->belongsTo(Post::class);
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('status', self::STATUS_APPROVED)->get();
     }
 }

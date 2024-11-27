@@ -53,6 +53,13 @@ Route::middleware('auth')->group(function () {
         Route::resource('posts', PostController::class);
         Route::resource('categories', CategoryController::class);
     });
+
+    Route::get('search', [HomeController::class, 'search'])->name('search');
+    Route::get('like/{code_post}', [HomeController::class, 'like'])->name('like');
+    Route::get('dislike/{code_post}', [HomeController::class, 'dislike'])->name('dislike');
+
+    Route::post('/comments/{id}/approve', [HomeController::class, 'approve'])->name('comments.approve');
+    Route::post('/comments/{id}/reject', [HomeController::class, 'reject'])->name('comments.reject');
 });
 
 Auth::routes();
