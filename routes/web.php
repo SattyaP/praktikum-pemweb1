@@ -2,8 +2,12 @@
 
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Auth\PengajuanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
+use App\Http\Middleware\checkRole;
+use App\Http\Middleware\IsAdmin;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -42,24 +46,38 @@ Route::get('/', function () {
     return redirect()->route('posts.index');
 });
 
-Route::get('posts', [HomeController::class, 'posts'])->name('posts.index');
-Route::get('posts/{code_post}', [HomeController::class, 'postShow'])->name('posts.show');
+Route::prefix('en')->group(function () {
+    Route::get('posts', [HomeController::class, 'posts'])->name('posts.index');
+    Route::get('posts/{code_post}', [HomeController::class, 'postShow'])->name('posts.show');
 
-Route::middleware('auth')->group(function () {
-    Route::post('posts/{code_post}/comments', [HomeController::class, 'postComment'])->name('comments.store');
+    Route::middleware('auth')->group(function () {
+        Route::post('posts/{code_post}/comments', [HomeController::class, 'postComment'])->name('comments.store');
 
-    Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
-        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
-        Route::resource('posts', PostController::class);
-        Route::resource('categories', CategoryController::class);
+        Route::middleware(checkRole::class)->group(function () {
+            Route::prefix('admin')->name('admin.')->group(function () {
+                Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+                Route::resource('posts', PostController::class);
+                Route::middleware(IsAdmin::class)->group(function () {
+                    Route::resource('categories', CategoryController::class);
+                    Route::resource('users', UserController::class);
+                });
+            });
+        });
+
+        Route::get('search', [HomeController::class, 'search'])->name('search');
+        Route::get('like/{code_post}', [HomeController::class, 'like'])->name('like');
+        Route::get('dislike/{code_post}', [HomeController::class, 'dislike'])->name('dislike');
+
+        Route::post('/comments/{id}/approve', [HomeController::class, 'approve'])->name('comments.approve');
+        Route::post('/comments/{id}/reject', [HomeController::class, 'reject'])->name('comments.reject');
     });
 
-    Route::get('search', [HomeController::class, 'search'])->name('search');
-    Route::get('like/{code_post}', [HomeController::class, 'like'])->name('like');
-    Route::get('dislike/{code_post}', [HomeController::class, 'dislike'])->name('dislike');
+    Route::get('pengajuan-author', [PengajuanController::class, 'index']);
+    Route::post('pengajuan-author', [PengajuanController::class, 'PengajuanAuthor'])->name('pengajuan-author');
 
-    Route::post('/comments/{id}/approve', [HomeController::class, 'approve'])->name('comments.approve');
-    Route::post('/comments/{id}/reject', [HomeController::class, 'reject'])->name('comments.reject');
+    Auth::routes();
 });
 
-Auth::routes();
+Route::fallback(function () {
+    return redirect()->back();
+});

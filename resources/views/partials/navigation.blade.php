@@ -29,6 +29,10 @@
                             <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
                         </li>
                     @endif
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('pengajuan-author') }}">{{ __('Pengajuan Author ?') }}</a>
+                    </li>
                 @else
                     <li class="nav-item dropdown">
                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
@@ -37,7 +41,14 @@
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{{ route('admin.dashboard') }}">Dashboard</a>
+                            <a class="dropdown-item text-capitalize d-flex align-items-center gap-1" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="15"
+                                    height="15" viewBox="0 0 24 24">
+                                    <path fill="#000"
+                                        d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12c5.16-1.26 9-6.45 9-12V5Zm0 3.9a3 3 0 1 1-3 3a3 3 0 0 1 3-3m0 7.9c2 0 6 1.09 6 3.08a7.2 7.2 0 0 1-12 0c0-1.99 4-3.08 6-3.08" />
+                                </svg> {{ Auth::user()->role }}</a>
+                            @if (Auth::user()->role == 'author' || Auth::user()->role == 'admin')
+                                <a class="dropdown-item" href="{{ route('admin.dashboard') }}">Dashboard</a>
+                            @endif
                             <a class="dropdown-item" href="{{ route('logout') }}"
                                 onclick="event.preventDefault();
                                              document.getElementById('logout-form').submit();">

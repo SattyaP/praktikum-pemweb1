@@ -28,13 +28,15 @@
         <tbody>
             @forelse ($collections as $collection)
                 <tr>
-                    <td>{{ $collection->id }}</td>
+                    <td>{{ $collection->code_post }}</td>
                     <td><img src="{{ asset('/storage/posts/' . $collection->image) }}" class="rounded" style="width: 150px">
                     </td>
                     <td>{{ $collection->title }}</td>
                     <td>{{ $collection->contents }}</td>
                     <td>{{ $collection->created_at->diffForHumans() }}</td>
-                    <td>{{ auth()->user()->name }}</td>
+                    <td>
+                        {{ $collection->postCategories->first()->user->name }}
+                    </td>
                     <td>
                         @if ($collection->categories)
                             @foreach ($collection->categories as $categories)

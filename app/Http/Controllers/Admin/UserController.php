@@ -1,41 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Models\Category;
-use App\Models\Post;
-use App\Models\PostCategory;
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
-class DashboardController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function index()
     {
-        $totalCategories = Category::count();
-        $users = User::count();
-
-        if (Auth::user()->role == 'admin') {
-            $totalPost = Post::count();
-        } else {
-            $totalPost = Post::with('postCategories', 'categories')
-                ->whereHas('postCategories', function ($query) {
-                    $query->where('user_id', auth()->user()->id);
-                })
-                ->count();
-        }
-
-        return view('admin.dashboard', compact('totalPost', 'totalCategories', 'users'));
+        $users = User::all();
+        return view('admin.users.index', compact('users'));
     }
 
     /**
@@ -59,7 +38,8 @@ class DashboardController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $user = User::find($id);
+        return view('admin.users.show', compact('user'));
     }
 
     /**
@@ -67,7 +47,8 @@ class DashboardController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $user = User::find($id);
+        return view('admin.users.edit', compact('user'));
     }
 
     /**
@@ -75,7 +56,9 @@ class DashboardController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $user = User::find($id);
+        $user->update($request->all());
+        return redirect()->route('admin.users.index');
     }
 
     /**
@@ -83,6 +66,8 @@ class DashboardController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::find($id);
+        $user->delete();
+        return redirect()->route('admin.users.index');
     }
 }

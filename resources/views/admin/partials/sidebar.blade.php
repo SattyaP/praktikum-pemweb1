@@ -4,7 +4,8 @@
 
         <ul>
             <li>
-                <a class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
+                <a class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
+                    href="{{ route('admin.dashboard') }}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                         <path
                             d="M21,3h-4V2h-2v1H9V2H7v1H3C2.447,3,2,3.447,2,4v17c0,0.553,0.447,1,1,1h18c0.553,0,1-0.447,1-1V4C22,3.447,21.553,3,21,3z M7,5v1h2V5h6v1h2V5h3v3H4V5H7z M4,20V10h16v10H4z" />
@@ -15,19 +16,23 @@
                 </a>
             </li>
 
-            <li>
-                <a class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}" href="{{ route('admin.categories.index') }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                        <path
-                            d="M12.707 2.293A.996.996 0 0 0 12 2H3a1 1 0 0 0-1 1v9c0 .266.105.52.293.707l9 9a.997.997 0 0 0 1.414 0l9-9a.999.999 0 0 0 0-1.414l-9-9zM12 19.586l-8-8V4h7.586l8 8L12 19.586z" />
-                        <circle cx="7.507" cy="7.505" r="1.505" />
-                    </svg>
-                    Categories
-                </a>
-            </li>
+            @if (Auth::user()->role == 'admin')
+                <li>
+                    <a class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}"
+                        href="{{ route('admin.categories.index') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path
+                                d="M12.707 2.293A.996.996 0 0 0 12 2H3a1 1 0 0 0-1 1v9c0 .266.105.52.293.707l9 9a.997.997 0 0 0 1.414 0l9-9a.999.999 0 0 0 0-1.414l-9-9zM12 19.586l-8-8V4h7.586l8 8L12 19.586z" />
+                            <circle cx="7.507" cy="7.505" r="1.505" />
+                        </svg>
+                        Categories
+                    </a>
+                </li>
+            @endif
 
             <li>
-                <a class="{{ request()->routeIs('admin.posts.*') ? 'active' : '' }}" href="{{ route('admin.posts.index') }}">
+                <a class="{{ request()->routeIs('admin.posts.*') ? 'active' : '' }}"
+                    href="{{ route('admin.posts.index') }}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                         <path d="M13 7L11 7 11 11 7 11 7 13 11 13 11 17 13 17 13 13 17 13 17 11 13 11z" />
                         <path
@@ -36,6 +41,20 @@
                     Posts
                 </a>
             </li>
+
+            @if (Auth::user()->role == 'admin')
+                <li>
+                    <a class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}"
+                        href="{{ route('admin.users.index') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M13 7L11 7 11 11 7 11 7 13 11 13 11 17 13 17 13 13 17 13 17 11 13 11z" />
+                            <path
+                                d="M12,2C6.486,2,2,6.486,2,12s4.486,10,10,10c5.514,0,10-4.486,10-10S17.514,2,12,2z M12,20c-4.411,0-8-3.589-8-8 s3.589-8,8-8s8,3.589,8,8S16.411,20,12,20z" />
+                        </svg>
+                        Users
+                    </a>
+                </li>
+            @endif
         </ul>
     </section>
 

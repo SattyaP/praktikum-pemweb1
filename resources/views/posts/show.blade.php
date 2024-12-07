@@ -11,8 +11,7 @@
     </nav>
 
     <p><strong>ManyPost.com</strong> | {{ $post->created_at }}</p>
-    <a href="{{ route('posts.index') }}" class="btn btn-secondary mb-3 w-25">Back</a>
-    <img src="{{ asset('/storage/posts/' . $post->image) }}" class="card-img-top img-fluid mb-3" alt="{{ $post->title }}">
+    <img src="{{ asset('/storage/posts/' . $post->image) }}" class="card-img-top img-fluid mb-3 w-75 rounded    " alt="{{ $post->title }}">
     <h1 class="fw-bold">{{ $post->title }}</h1>
 
     <div class="d-flex gap-3 align-items-center text-center">
@@ -39,7 +38,7 @@
     </div>
 
     <p>Published at {{ $post->created_at->diffForHumans() }}</p>
-
+    <p>Author by <strong>{{ $post->postCategories->first()->user->name}}</strong></p>
 
     <article>
         <p>{{ $post->contents }}</p>
